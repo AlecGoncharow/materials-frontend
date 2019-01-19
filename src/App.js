@@ -6,6 +6,7 @@ import CircularIndeterminate from './Loading';
 import BasicSunburst from './basic-sunburst';
 import LinearIndeterminate from './LinearIndeterminate'
 import buildData from './utils';
+import Grid from "@material-ui/core/Grid";
 
 class App extends Component {
   constructor(props){
@@ -17,10 +18,13 @@ class App extends Component {
         acm: false,
         pdc: false,
     };
+    this.handleClick = this.handleClick.bind(this);
+    this.handleChange = this.handleChange.bind(this);
   }
 
-  componentDidMount() {
-    fetch("https://car-cs.herokuapp.com/data/")
+  updateSelections(selections) {
+      this.setState({dataIsBuilt: false, acm: false, pdc: false});
+      fetch("https://car-cs.herokuapp.com/data/" + selections)
         .then((response) => {
             console.log(response);
             return response.json()
@@ -54,8 +58,38 @@ class App extends Component {
                     });
             }
         );
-
   }
+  componentDidMount() {
+      this.updateSelections("");
+  }
+
+
+  handleChange(event) {
+      if (event.key === "Enter") {
+          this.updateSelections("?assignments=" + event.target.value);
+      }
+  }
+
+  handleClick(event) {
+      let target = event.target;
+      if (target !== undefined) {
+          let targetID = target.id;
+          switch (targetID) {
+              case 'btn-All':
+                  this.updateSelections("")
+                  break;
+              case 'btn-Peachy':
+                  this.updateSelections("?assignments=88,89,90,91,92,93,94,95,96,97,98,")
+                  break;
+              case 'btn-3145':
+                  this.updateSelections("?assignments=99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119")
+                  break;
+              default:
+                  console.log(targetID);
+          }
+      }
+  }
+
   render() {
       if (!this.state.dataIsBuilt) {
           let loading;
@@ -92,11 +126,15 @@ class App extends Component {
           };
           return (
               <div className="App">
-                  <ButtonAppBar/>
-                  <div style={sunStyle}>
-                      {acm_data}
-                      {pdc_data}
+                  <div>
+                      <ButtonAppBar onClick={this.handleClick} onKeyPress={this.handleChange}/>
                   </div>
+                  <Grid>
+                      <div style={sunStyle}>
+                          {acm_data}
+                          {pdc_data}
+                      </div>
+                  </Grid>
               </div>
           );
       }

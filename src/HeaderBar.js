@@ -5,8 +5,7 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Menu';
+import TextField from "@material-ui/core/TextField";
 
 const styles = {
   root: {
@@ -23,17 +22,23 @@ const styles = {
 
 function ButtonAppBar(props) {
   const { classes } = props;
+  let inputProps = {
+    style: {color: "white"},
+    onKeyPress: props.onKeyPress,
+  };
   return (
     <div className={classes.root}>
       <AppBar position="static">
         <Toolbar>
-          <IconButton className={classes.menuButton} color="inherit" aria-label="Menu">
-            <MenuIcon />
-          </IconButton>
+          <TextField className={classes.textField} label="Custom IDs" aria-label="input"
+          inputProps={inputProps}>
+          </TextField>
           <Typography variant="h6" color="inherit" className={classes.grow}>
             Computer Science Material Visualization
           </Typography>
-          <Button color="inherit">Login</Button>
+          <Button id="btn-All" color="inherit" onClick={props.onClick}>All Assignments</Button>
+          <Button id="btn-Peachy" color="inherit" onClick={props.onClick}>Peachy</Button>
+          <Button id="btn-3145" color="inherit" onClick={props.onClick}>ITCS 3145</Button>
         </Toolbar>
       </AppBar>
     </div>

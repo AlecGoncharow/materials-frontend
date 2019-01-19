@@ -22,12 +22,6 @@ import React from 'react';
 
 import {Sunburst} from "react-vis/es";
 import {EXTENDED_DISCRETE_COLOR_RANGE} from "react-vis/es/theme";
-import  {LabelSeries} from "react-vis/es";
-
-const LABEL_STYLE = {
-  fontSize: '16px',
-  textAnchor: 'middle'
-};
 
 /**
  * Recursively work backwards from highlighted node to find path of valud nodes
@@ -85,7 +79,7 @@ export default class BasicSunburst extends React.Component {
 
 
   render() {
-    const {clicked, data, finalValue} = this.state;
+    const {clicked, data} = this.state;
     return (
       <div className="basic-sunburst-example-wrapper">
         <Sunburst
@@ -102,7 +96,6 @@ export default class BasicSunburst extends React.Component {
               return res;
             }, {});
             this.setState({
-              finalValue: path[path.length - 1],
               pathValue: path.join(' > '),
               data: updateData(this.state.data, pathAsMap)
             });
