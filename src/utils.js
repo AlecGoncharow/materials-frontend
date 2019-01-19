@@ -1,5 +1,3 @@
-import React from 'react';
-
 
 export default function buildData(props){
     let cls = props.cls;
@@ -20,10 +18,8 @@ export default function buildData(props){
         }
     }
 
-    let i = 0;
     for (let item in cSet) {
         let curr = cls[item];
-        i += cSet[item];
 
         while (curr !== undefined) {
             curr.hits += cSet[item];
@@ -31,28 +27,17 @@ export default function buildData(props){
         }
     }
 
-    let out = []
+    let out = [];
     for (let c in cls) {
-        out[c] = {};
-        out[c]['name'] = cls[c]['id'];
-        out[c]['value'] = cls[c]['hits'] * 5;
-        out[c].children = [];
-    }
-
-    for (let c in cls) {
-        if(cls[c].parent) {
-            out[cls[c].parent].children.push(out[c]);
+        if (cls[c]['depth'] === 1) {
+            let obj = {};
+            obj['name'] = cls[c]['id'] + ": " + cls[c].hits;
+            obj['value'] = cls[c]['hits'] + 10;
+            out.push(obj);
         }
     }
 
-    let root = {};
-    for (let c in cls) {
-        if(!cls[c].parent) {
-            root = out[c];
-        }
-    }
+    console.log(out);
 
-    console.log(root);
-
-    return root;
+    return {children: out};
 }

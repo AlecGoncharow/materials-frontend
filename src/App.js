@@ -95,8 +95,6 @@ class App extends Component {
                   <ButtonAppBar/>
                   <div style={sunStyle}>
                       {acm_data}
-                  </div>
-                  <div style={sunStyle}>
                       {pdc_data}
                   </div>
               </div>

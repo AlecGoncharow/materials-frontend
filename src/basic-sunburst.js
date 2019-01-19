@@ -24,8 +24,6 @@ import {Sunburst} from "react-vis/es";
 import {EXTENDED_DISCRETE_COLOR_RANGE} from "react-vis/es/theme";
 import  {LabelSeries} from "react-vis/es";
 
-import D3FlareData from './vis';
-
 const LABEL_STYLE = {
   fontSize: '16px',
   textAnchor: 'middle'
@@ -71,17 +69,15 @@ function updateData(data, keyPath) {
   return data;
 }
 
-var decoratedData;
 
 export default class BasicSunburst extends React.Component {
     constructor(props) {
         super(props);
-        decoratedData = updateData(props.data, false);
+        let decoratedData = updateData(props.data, false);
         console.log(decoratedData);
         this.state = {
             pathValue: false,
             data: decoratedData,
-            finalValue: 'SUNBURST',
             clicked: false
         };
     }
@@ -89,12 +85,9 @@ export default class BasicSunburst extends React.Component {
 
 
   render() {
-    const {clicked, data, finalValue, pathValue} = this.state;
+    const {clicked, data, finalValue} = this.state;
     return (
       <div className="basic-sunburst-example-wrapper">
-        <div>
-          {clicked ? 'click to unlock selection' : 'click to lock selection'}
-        </div>
         <Sunburst
           animation
           className="basic-sunburst-example"
@@ -111,7 +104,7 @@ export default class BasicSunburst extends React.Component {
             this.setState({
               finalValue: path[path.length - 1],
               pathValue: path.join(' > '),
-              data: updateData(decoratedData, pathAsMap)
+              data: updateData(this.state.data, pathAsMap)
             });
           }}
           onValueMouseOut={() =>
@@ -120,7 +113,7 @@ export default class BasicSunburst extends React.Component {
               : this.setState({
                   pathValue: false,
                   finalValue: false,
-                  data: updateData(decoratedData, false)
+                  data: updateData(this.state.data, false)
                 })
           }
           onValueClick={() => this.setState({clicked: !clicked})}
@@ -133,16 +126,11 @@ export default class BasicSunburst extends React.Component {
           getSize={d => d.value}
           getColor={d => d.hex}
           data={data}
-          height={600}
-          width={700}
+          height={300}
+          width={600}
         >
-          {finalValue && (
-            <LabelSeries
-              data={[{x: 0, y: 0, label: finalValue, style: LABEL_STYLE}]}
-            />
-          )}
         </Sunburst>
-        <div className="basic-sunburst-example-path-name">{pathValue}</div>
+          {this.state.finalValue}
       </div>
     );
   }
