@@ -71,15 +71,22 @@ function updateData(data, keyPath) {
   return data;
 }
 
-const decoratedData = updateData(D3FlareData, false);
+var decoratedData;
 
 export default class BasicSunburst extends React.Component {
-  state = {
-    pathValue: false,
-    data: decoratedData,
-    finalValue: 'SUNBURST',
-    clicked: false
-  };
+    constructor(props) {
+        super(props);
+        decoratedData = updateData(props.data, false);
+        console.log(decoratedData);
+        this.state = {
+            pathValue: false,
+            data: decoratedData,
+            finalValue: 'SUNBURST',
+            clicked: false
+        };
+    }
+
+
 
   render() {
     const {clicked, data, finalValue, pathValue} = this.state;
