@@ -96,6 +96,7 @@ export default class BasicSunburst extends React.Component {
               return res;
             }, {});
             this.setState({
+              finalValue: path[path.length - 1],
               pathValue: path.join(' > '),
               data: updateData(this.state.data, pathAsMap)
             });
