@@ -5,8 +5,9 @@ import ButtonAppBar from './HeaderBar';
 import CircularIndeterminate from './Loading';
 import BasicSunburst from './basic-sunburst';
 import LinearIndeterminate from './LinearIndeterminate'
-import buildData from './utils';
+import buildData, { buildTreeData } from './utils';
 import Grid from "@material-ui/core/Grid";
+import CoverageGraph from "./CoverageGraph";
 
 class App extends Component {
   constructor(props){
@@ -16,14 +17,16 @@ class App extends Component {
         selections: false,
         dataIsBuilt: false,
         acm: false,
+        acm_tree: false,
         pdc: false,
+        pdc_tree: false,
     };
     this.handleClick = this.handleClick.bind(this);
     this.handleChange = this.handleChange.bind(this);
   }
 
   updateSelections(selections) {
-      this.setState({dataIsBuilt: false, acm: false, pdc: false});
+      this.setState({dataIsBuilt: false, acm: false, pdc: false, acm_tree: false, pdc_tree: false});
       fetch("https://car-cs.herokuapp.com/data/" + selections)
         .then((response) => {
             console.log(response);
@@ -41,9 +44,10 @@ class App extends Component {
                     })
                     .then((resp_data) => {
                         console.log(resp_data);
-                        let data = buildData({cls: resp_data, selections: this.state.selections})
-                        console.log(data);
-                        this.setState({dataIsBuilt: true, pdc: data});
+                        let data = buildData({cls: resp_data, selections: this.state.selections});
+                        let data_tree = buildTreeData({cls: resp_data, selections: this.state.selections, ignore: 'ACM'});
+                        console.log(data_tree);
+                        this.setState({dataIsBuilt: true, pdc: data, pdc_tree: data_tree});
                     });
                 fetch("https://car-cs.herokuapp.com/static/assignments/js/ACM.json")
                     .then((response) => {
@@ -52,9 +56,9 @@ class App extends Component {
                     })
                     .then((resp_data) => {
                         console.log(resp_data);
-                        let data = buildData({cls: resp_data, selections: this.state.selections})
-                        console.log(data);
-                        this.setState({dataIsBuilt: true, acm: data});
+                        let data = buildData({cls: resp_data, selections: this.state.selections});
+                        let data_tree = buildTreeData({cls: resp_data, selections: this.state.selections, ignore: 'PDC'});
+                        this.setState({dataIsBuilt: true, acm: data, acm_tree: data_tree});
                     });
             }
         );
@@ -107,16 +111,22 @@ class App extends Component {
       }
       else {
           let acm_data;
+          let acm_graph;
           let pdc_data;
+          let pdc_graph;
           if (this.state.acm) {
               acm_data = <BasicSunburst data={this.state.acm}/>
+              acm_graph = <CoverageGraph data={this.state.acm_tree}/>
           } else {
               acm_data = <CircularIndeterminate/>;
+              acm_graph = <CircularIndeterminate/>;
           }
           if (this.state.pdc) {
               pdc_data = <BasicSunburst data={this.state.pdc}/>
+              pdc_graph = <CoverageGraph data={this.state.pdc_tree}/>
           } else {
               pdc_data = <CircularIndeterminate/>;
+              pdc_graph = <CircularIndeterminate/>;
           }
           let sunStyle = {
               display: 'flex',
@@ -133,6 +143,10 @@ class App extends Component {
                       <div style={sunStyle}>
                           {acm_data}
                           {pdc_data}
+                      </div>
+                      <div>
+                          {acm_graph}
+                          {pdc_graph}
                       </div>
                   </Grid>
               </div>
