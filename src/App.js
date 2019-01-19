@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
+import CoverageGraph from './CoverageGraph'
 
 class App extends Component {
   constructor(props){
@@ -29,6 +30,9 @@ class App extends Component {
         <header className="App-header">
             <h1>Hello World!</h1>
         </header>
+          <div>
+              <CoverageGraph data={[5,10,1,3,4,5,6,7,8,9]} size={[500,500]} assignments={this.state.data} />
+          </div>
       </div>
     );
   }
