@@ -104,6 +104,13 @@ class CoverageGraph extends Component {
                     .duration(200)
                     .style("opacity", 0);
             })
+            .style("opacity", (d) => {
+              if (d.hits === 0) {
+                  return 0.7;
+              } else {
+                  return 1;
+              }
+            })
             .style("fill", function(d) {
                 if (d.hits === 0) {
                     return 'white';
