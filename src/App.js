@@ -1,13 +1,16 @@
 import React, { Component } from 'react';
 import './App.css';
-import CoverageGraph from './CoverageGraph'
+//import CoverageGraph from './CoverageGraph'
+import ButtonAppBar from './HeaderBar';
+import CircularIndeterminate from './Loading';
+import BasicSunburst from './basic-sunburst';
 
 class App extends Component {
   constructor(props){
     super(props);
 
     this.state = {
-      data: [],
+      data: false,
     };
   }
 
@@ -23,19 +26,33 @@ class App extends Component {
         })
         .then(() => console.log(this.state))
   }
-
   render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-            <h1>Hello World!</h1>
-        </header>
-          <div>
-              <CoverageGraph data={[5,10,1,3,4,5,6,7,8,9]} size={[500,500]} assignments={this.state.data} />
-          </div>
-      </div>
-    );
+      if (!this.state.data) {
+          return (
+              <div className="App">
+                  <ButtonAppBar/>
+                  <CircularIndeterminate/>
+              </div>
+          )
+      }
+      else {
+          let sunStyle = {
+              display: 'flex',
+              height: '100%',
+              width: '100%',
+              justifyContent: 'center',
+          };
+          return (
+              <div className="App">
+                  <ButtonAppBar/>
+                  <div style={sunStyle}>
+                      <BasicSunburst />
+                  </div>
+              </div>
+          );
+      }
   }
 }
+
 
 export default App;
