@@ -142,10 +142,10 @@ class App extends Component {
                   <Grid>
                       <div style={sunStyle}>
                           {acm_data}
-                          {pdc_data}
-                      </div>
-                      <div>
                           {acm_graph}
+                      </div>
+                      <div style={sunStyle}>
+                          {pdc_data}
                           {pdc_graph}
                       </div>
                   </Grid>
