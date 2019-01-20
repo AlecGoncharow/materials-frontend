@@ -37,6 +37,7 @@ function ButtonAppBar(props) {
             Computer Science Material Visualization
           </Typography>
           <Button id="btn-All" color="inherit" onClick={props.onClick}>All Assignments</Button>
+          <Button id="btn-Nifty" color="inherit" onClick={props.onClick}>Nifty</Button>
           <Button id="btn-Peachy" color="inherit" onClick={props.onClick}>Peachy</Button>
           <Button id="btn-3145" color="inherit" onClick={props.onClick}>ITCS 3145</Button>
         </Toolbar>

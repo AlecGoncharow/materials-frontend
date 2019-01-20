@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import './App.css'
 import * as d3 from 'd3'
 import CircularIndeterminate from './Loading';
+import {Card, CardContent} from "@material-ui/core";
 
 class CoverageGraph extends Component {
     constructor(props) {
@@ -25,6 +26,13 @@ class CoverageGraph extends Component {
         const node = this.node;
         let data = this.state.data;
 
+        let code = 0;
+
+        let zoom = d3.zoom()
+            .scaleExtent([1, 10])
+            .translateExtent([[-100, -100], [1000 + 90,  1000 + 100]])
+            .on("zoom", zoomed);
+
         let view = d3.select(node).append("g")
             .attr("class", "view")
             .attr("x", 0.5)
@@ -34,6 +42,8 @@ class CoverageGraph extends Component {
         let color_scale = d3.scaleLinear()
             .domain([1, 100])
             .range([88, 50]);
+
+        d3.select(node).call(zoom);
 
         let scale = ['#79c6e6', 'hsl(0, 100%, ', 'hsl(120, 100%, ','hsl(60, 100%, ', 'hsl(180, 100%, ','hsl(180, 100%, ','hsl(180, 100%, ','hsl(180, 100%, ',];
         var simulation = d3.forceSimulation()
@@ -144,6 +154,17 @@ class CoverageGraph extends Component {
         nodes.append("title")
             .text(function(d) { return d.id + ": " + d.hits; });
 
+        let text = view.append("g")
+            .attr("class", "labels")
+            .selectAll("text")
+            .data(data.nodes)
+            .enter().append("text")
+            .attr("dx", function(d){return -20})
+            .text(function(d) { if (d.depth === 1) {
+                return code++ + "";
+            } return "";
+            });
+
         let ticked = function() {
             link
                 .attr("x1", function(d) { return d.source.x; })
@@ -154,6 +175,10 @@ class CoverageGraph extends Component {
             nodes
                 .attr("cx", function(d) { return d.x; })
                 .attr("cy", function(d) { return d.y; });
+
+            text
+                .attr("dx", function(d) { return d.x})
+                .attr("dy", function (d) { return d.y});
         };
 
         simulation
@@ -162,6 +187,10 @@ class CoverageGraph extends Component {
 
         simulation.force("link")
             .links(data.links);
+
+        function zoomed() {
+            view.attr("transform", d3.event.transform);
+        }
 
     }
 
@@ -172,9 +201,15 @@ class CoverageGraph extends Component {
           )
         }
         else {
-            return <svg ref={node => this.node = node}
-                        width={1000} height={1000}>
-            </svg>
+            return (
+                <Card>
+                    <CardContent>
+                        <svg ref={node => this.node = node}
+                             width={1000} height={1000}>
+                        </svg>
+                    </CardContent>
+                </Card>
+            );
         }
     }
 }

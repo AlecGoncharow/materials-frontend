@@ -63,14 +63,17 @@ export function buildTreeData(props) {
         }
     }
 
+    /* buildData already increments the hits
     for (let item in cSet) {
         let curr = cls[item];
+        console.log(curr);
 
         while (curr !== undefined) {
             curr.hits += cSet[item];
             curr = cls[curr.parent];
         }
     }
+    */
 
     let data = {max: []};
     let out = [];
