@@ -4,7 +4,7 @@ import * as d3 from 'd3'
 import CircularIndeterminate from './Loading';
 import {Card, CardContent} from "@material-ui/core";
 
-class CoverageGraph extends Component {
+class SimilarityGraph extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -45,12 +45,12 @@ class CoverageGraph extends Component {
 
         d3.select(node).call(zoom);
 
-        let scale = ['#79c6e6', 'hsl(0, 100%, ', 'hsl(120, 100%, ','hsl(60, 100%, ', 'hsl(180, 100%, ','hsl(180, 100%, ','hsl(180, 100%, ','hsl(180, 100%, ',];
+        let scale = ['#79c6e6', '#DC8EE6'];
         let simulation = d3.forceSimulation()
             .force("link", d3.forceLink().id(function(d) { return d.id; }).distance(function(d) {
-                return 100/((d.source.depth+(2/0.75)));
+                return 100/d.value;
             }).strength(.75))
-            .force("collide", d3.forceCollide( function(d) { return 50/((d.depth+1)/0.75) } ))
+            .force("collide", d3.forceCollide( function(d) { return 10 } ))
             .force("charge", d3.forceManyBody())
             .force("center", d3.forceCenter(500, 500))
             .force("y", d3.forceY(0))
@@ -62,15 +62,10 @@ class CoverageGraph extends Component {
             .data(this.state.data.links)
             .enter().append("line")
             .attr("stroke-width", function(d) {
-                 if (d.hits === 0) {
-                    return 1;
-                }
-                else {
-                    return 2;
-                }
+                    return d.value;
             })
             .attr("stroke", function(d){
-                if (d.hits === 0) {
+                if (d.value === 0) {
                     return 'grey';
                 }
                 else {
@@ -78,7 +73,7 @@ class CoverageGraph extends Component {
                 }
             })
             .attr("stroke-dasharray", function(d) {
-                if (d.hits === 0) {
+                if (d.value === 0) {
                     return '1';
                 }
                 else {
@@ -93,7 +88,7 @@ class CoverageGraph extends Component {
             .selectAll("circle")
             .data(this.state.data.nodes)
             .enter().append("circle")
-            .attr("r", function(d) { return (20/(1 + d.depth)); })
+            .attr("r", function(d) { return 10; })
             .attr("id", function(d) { return d.id; })
             //.on("mouseover", function(d) { d3.select(this).style("opacity", 1 ); })
             //.on("mouseout", function(d) { d3.select(this).style("opacity", 0.5); })
@@ -101,69 +96,25 @@ class CoverageGraph extends Component {
             //     console.log(d);
             // })
             //.style("opacity", 0.5)
-            .on('mouseover', function(d, i) {
-                d3.select("#tooltip").transition()
-                    .duration(200)
-                    .style("opacity", 0.9);
-                d3.select("#tooltip").html(d.id + ': ' + d.hits + ("<br />"))
-                    .style("left", (d3.event.pageX) + "px")
-                    .style("top", (d3.event.pageY - 28) + "px");
-            })
-            .on('mouseout', function(d, i) {
-                d3.select("#tooltip").transition()
-                    .duration(200)
-                    .style("opacity", 0);
-            })
-            .style("opacity", (d) => {
-              if (d.hits === 0) {
-                  return 0.7;
-              } else {
-                  return 1;
-              }
-            })
             .style("fill", function(d) {
-                if (d.hits === 0) {
-                    return 'white';
-                }
-                else {
-                    if (d.depth === 0) {
-                        return scale[0];
-                    } else {
-                        color_scale.domain([1, data['max'][d.depth]]);
-                        return scale[d.depth] + color_scale(d.hits) + "%";
-                    }
+                if (d.id.startsWith("PDC")) {
+                    return scale[1];
+                } else {
+                    return scale[0];
                 }
             })
             .attr("stroke", function(d){
-                if (d.hits === 0) {
-                    return 'grey';
-                }
-                else {
-                    return 'black';
-                }
+                return 'black';
             })
-            .attr("stroke-dasharray", function(d) {
-                if (d.hits === 0) {
-                    return '1';
-                }
-                else {
-                    return '';
-                }
-            })
+            .call(d3.drag()
+                .on("start", dragstarted)
+                .on("drag", dragged)
+                .on("end", dragended)
+            );
 
         nodes.append("title")
-            .text(function(d) { return d.id + ": " + d.hits; });
+            .text(function(d) { return d.id });
 
-        let text = view.append("g")
-            .attr("class", "labels")
-            .selectAll("text")
-            .data(data.nodes)
-            .enter().append("text")
-            .attr("dx", function(d){return -20})
-            .text(function(d) { if (d.depth === 1) {
-                return code++ + "";
-            } return "";
-            });
 
         let ticked = function() {
             link
@@ -175,10 +126,6 @@ class CoverageGraph extends Component {
             nodes
                 .attr("cx", function(d) { return d.x; })
                 .attr("cy", function(d) { return d.y; });
-
-            text
-                .attr("dx", function(d) { return d.x})
-                .attr("dy", function (d) { return d.y});
         };
 
         simulation
@@ -190,6 +137,23 @@ class CoverageGraph extends Component {
 
         function zoomed() {
             view.attr("transform", d3.event.transform);
+        }
+
+        function dragstarted(d) {
+            if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+            d.fx = d.x;
+            d.fy = d.y;
+        }
+
+        function dragged(d) {
+            d.fx = d3.event.x;
+            d.fy = d3.event.y;
+        }
+
+        function dragended(d) {
+            if (!d3.event.active) simulation.alphaTarget(0);
+            d.fx = null;
+            d.fy = null;
         }
 
     }
@@ -213,4 +177,4 @@ class CoverageGraph extends Component {
         }
     }
 }
-export default CoverageGraph
+export default SimilarityGraph

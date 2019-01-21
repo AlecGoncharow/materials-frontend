@@ -100,3 +100,51 @@ export function buildTreeData(props) {
     data['links'] = links;
     return data;
 }
+
+export function similarityData(props) {
+    let assignments = props.selections.assignments;
+    let cls = props.selections.classifications;
+    let similarity = {};
+    for (let assignment in assignments) {
+        let classifications = assignments[assignment].fields.classifications;
+        for (let c in classifications) {
+            let cl = classifications[c];
+            if (!cl.startsWith("PDC")) {
+                if (similarity[cl] === undefined) {
+                    similarity[cl] = [];
+                }
+                for (let b in classifications) {
+                    let bl = classifications[b];
+                    if (bl.startsWith("PDC")) {
+                        let ele = similarity[cl].findIndex(function (e) {
+                            return e.id === bl;
+                        });
+                        if (ele === -1) {
+                            similarity[cl].push({'id': bl, 'value': 1});
+                        } else {
+                            similarity[cl][ele].value++;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    let data = {};
+    let links = [];
+    let nodes = [];
+    console.log(similarity);
+    for (let cl in cls) {
+        nodes[nodes.length] = {id: cls[cl]};
+        let curr = similarity[cls[cl]];
+        if (curr !== undefined) {
+            for (let other in curr) {
+                links[links.length] = {'source': cls[cl], 'target': curr[other].id, 'value': curr[other].value};
+            }
+        }
+    }
+    data['nodes'] = nodes;
+    data['links'] = links;
+
+    return data;
+}

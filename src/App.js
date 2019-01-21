@@ -5,9 +5,10 @@ import ButtonAppBar from './HeaderBar';
 import CircularIndeterminate from './Loading';
 import BasicSunburst from './basic-sunburst';
 import LinearIndeterminate from './LinearIndeterminate'
-import buildData, { buildTreeData } from './utils';
+import buildData, { buildTreeData, similarityData } from './utils';
 import Grid from "@material-ui/core/Grid";
 import CoverageGraph from "./CoverageGraph";
+import SimilarityGraph from "./SimilarityGraph";
 
 class App extends Component {
   constructor(props){
@@ -20,13 +21,14 @@ class App extends Component {
         acm_tree: false,
         pdc: false,
         pdc_tree: false,
+        sim_data: false,
     };
     this.handleClick = this.handleClick.bind(this);
     this.handleChange = this.handleChange.bind(this);
   }
 
   updateSelections(selections) {
-      this.setState({dataIsBuilt: false, acm: false, pdc: false, acm_tree: false, pdc_tree: false});
+      this.setState({dataIsBuilt: false, acm: false, pdc: false, acm_tree: false, pdc_tree: false, sim_data: false});
       fetch("https://car-cs.herokuapp.com/data/" + selections)
         .then((response) => {
             console.log(response);
@@ -34,7 +36,9 @@ class App extends Component {
         })
         .then((resp_data) => {
           console.log(resp_data);
-          this.setState({selections: resp_data, dataIsBuilt: false});
+          let sim_data = similarityData({selections: resp_data});
+          console.log(sim_data)
+          this.setState({selections: resp_data, dataIsBuilt: false, sim_data: sim_data});
         })
         .then(() => {
                 fetch("https://car-cs.herokuapp.com/static/assignments/js/pdc.json")
@@ -117,16 +121,19 @@ class App extends Component {
           let acm_graph;
           let pdc_data;
           let pdc_graph;
+          let sim_graph;
           if (this.state.acm && this.state.pdc) {
               acm_data = <BasicSunburst data={this.state.acm}/>
               acm_graph = <CoverageGraph data={this.state.acm_tree}/>
               pdc_data = <BasicSunburst data={this.state.pdc}/>
               pdc_graph = <CoverageGraph data={this.state.pdc_tree}/>
+              sim_graph = <SimilarityGraph data={this.state.sim_data}/>
           } else {
               acm_data = <CircularIndeterminate/>;
               acm_graph = <CircularIndeterminate/>;
               pdc_data = <CircularIndeterminate/>;
               pdc_graph = <CircularIndeterminate/>;
+              sim_graph = <CircularIndeterminate/>
           }
           let sunStyle = {
               display: 'flex',
@@ -147,6 +154,9 @@ class App extends Component {
                       <div style={sunStyle}>
                           {pdc_data}
                           {pdc_graph}
+                      </div>
+                      <div>
+                          {sim_graph}
                       </div>
                   </Grid>
               </div>
