@@ -56,6 +56,7 @@ class CoverageGraph extends Component {
             .force("y", d3.forceY(0))
             .force("x", d3.forceX(0));
 
+        console.log(this.state.data);
         let link = view.append("g")
             .attr("class", "links")
             .selectAll("line")
@@ -149,7 +150,7 @@ class CoverageGraph extends Component {
                 else {
                     return '';
                 }
-            })
+            });
 
         nodes.append("title")
             .text(function(d) { return d.id + ": " + d.hits; });

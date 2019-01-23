@@ -139,7 +139,9 @@ export function similarityData(props) {
         let curr = similarity[cls[cl]];
         if (curr !== undefined) {
             for (let other in curr) {
-                links[links.length] = {'source': cls[cl], 'target': curr[other].id, 'value': curr[other].value};
+                if (curr[other].value > 3) {
+                    links[links.length] = {'source': cls[cl], 'target': curr[other].id, 'value': curr[other].value};
+                }
             }
         }
     }
@@ -148,3 +150,40 @@ export function similarityData(props) {
 
     return data;
 }
+
+ export function compareAssignments(props) {
+    let from = props.from;
+    let to = props.to;
+    let threshold = 3;
+
+     let data = {};
+     let links = [];
+     let nodes = [];
+     for (let from_a in from) {
+         nodes[nodes.length] = {id: from[from_a].fields.title};
+         let from_cls = from[from_a].fields.classifications;
+         for (let to_a in to) {
+             let sim = 0;
+             let to_cls = to[to_a].fields.classifications;
+             for (let cls in from_cls) {
+                 let c = from_cls[cls];
+                 sim += to_cls.includes(c) ? 1 : 0;
+             }
+             if (sim >= threshold) {
+                 links[links.length] = {
+                     'source': from[from_a].fields.name,
+                     'target': to[to_a].fields.name,
+                     'value': sim
+                 };
+                 console.log([links.length - 1]);
+             }
+         }
+     }
+     for (let to_a in to) {
+         nodes[nodes.length] = {id: to[to_a].fields.title};
+     }
+     data['nodes'] = nodes;
+     data['links'] = links;
+
+     return data;
+ }

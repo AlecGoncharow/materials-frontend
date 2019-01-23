@@ -50,7 +50,7 @@ class SimilarityGraph extends Component {
             .force("link", d3.forceLink().id(function(d) { return d.id; }).distance(function(d) {
                 return 100/d.value;
             }).strength(.75))
-            .force("collide", d3.forceCollide( function(d) { return 10 } ))
+            .force("collide", d3.forceCollide( function(d) { return 50 } ))
             .force("charge", d3.forceManyBody())
             .force("center", d3.forceCenter(500, 500))
             .force("y", d3.forceY(0))
