@@ -18,21 +18,33 @@ export default function buildData(props){
         }
     }
 
+    let nodes = [];
     for (let item in cSet) {
-        let curr = cls[item];
-
-        while (curr !== undefined) {
-            curr.hits += cSet[item];
-            curr = cls[curr.parent];
+        if (cls[item] !== undefined) {
+            let curr = {id: cls[item].id, parent: cls[item].parent, depth: cls[item].depth, hits: cSet[item]};
+            while (curr !== undefined) {
+                nodes[nodes.length] = curr;
+                if (cls[curr.parent] !== undefined) {
+                    curr = {
+                        id: cls[curr.parent].id,
+                        parent: cls[curr.parent].parent,
+                        depth: cls[curr.parent].depth,
+                        hits: cSet[curr.parent]
+                    };
+                } else {
+                    break;
+                }
+            }
         }
     }
 
+    console.log(nodes);
     let out = [];
-    for (let c in cls) {
-        if (cls[c]['depth'] === 1) {
+    for (let c in nodes) {
+        if (nodes[c]['depth'] === 1) {
             let obj = {};
-            obj['name'] = cls[c]['id'] + ": " + cls[c].hits;
-            obj['value'] = cls[c]['hits'] + 10;
+            obj['name'] = nodes[c]['id'] + ": " + nodes[c].hits;
+            obj['value'] = nodes[c]['hits'] + 10;
             out.push(obj);
         }
     }
@@ -63,40 +75,48 @@ export function buildTreeData(props) {
         }
     }
 
-    /* buildData already increments the hits
+    let nodes = [];
     for (let item in cSet) {
-        let curr = cls[item];
-        console.log(curr);
-
-        while (curr !== undefined) {
-            curr.hits += cSet[item];
-            curr = cls[curr.parent];
-        }
-    }
-    */
-
-    let data = {max: []};
-    let out = [];
-        let links = [];
-        for (let a in cls) {
-            if (a.startsWith(ignore)) {
-                continue;
-            }
-            let o = cls[a];
-            if (o.parent === undefined) {
-                out[out.length] = o;
-            }
-            else {
-                let p = cls[o.parent];
-                if (p.hits !== 0) {
-                    out[out.length] = o;
-                    links[links.length] = {'source': o.id, 'target': p.id, 'hits': o.hits};
-
-                    data.max[o.depth] = data.max[o.depth] > o.hits ? data.max[o.depth] : o.hits;
+        if (cls[item] !== undefined) {
+            let curr = {id: cls[item].id, parent: cls[item].parent, depth: cls[item].depth, hits: cSet[item]};
+            while (curr !== undefined) {
+                nodes[nodes.length] = curr;
+                if (cls[curr.parent] !== undefined) {
+                    curr = {
+                        id: cls[curr.parent].id,
+                        parent: cls[curr.parent].parent,
+                        depth: cls[curr.parent].depth,
+                        hits: cSet[curr.parent]
+                    };
+                } else {
+                    break;
                 }
             }
         }
-    data['nodes'] = out;
+    }
+
+    let data = {max: []};
+    let out = [];
+    let links = [];
+    for (let a in cls) {
+        if (a.startsWith(ignore)) {
+            continue;
+        }
+        let o = cls[a];
+        if (o.parent === undefined) {
+            out[out.length] = o;
+        }
+        else {
+            let p = cls[o.parent];
+            if (p.hits !== 0) {
+                out[out.length] = o;
+                links[links.length] = {'source': o.id, 'target': p.id, 'hits': o.hits};
+
+                data.max[o.depth] = data.max[o.depth] > o.hits ? data.max[o.depth] : o.hits;
+            }
+        }
+    }
+    data['nodes'] = nodes;
     data['links'] = links;
     return data;
 }
@@ -154,33 +174,39 @@ export function similarityData(props) {
  export function compareAssignments(props) {
     let from = props.from;
     let to = props.to;
-    let threshold = 3;
+    let threshold = 2;
 
      let data = {};
      let links = [];
      let nodes = [];
      for (let from_a in from) {
-         nodes[nodes.length] = {id: from[from_a].fields.title};
+         console.log(from[from_a]);
+         nodes[nodes.length] = {id: from[from_a].fields.title, to: false};
          let from_cls = from[from_a].fields.classifications;
          for (let to_a in to) {
              let sim = 0;
              let to_cls = to[to_a].fields.classifications;
+             let lab = "";
              for (let cls in from_cls) {
                  let c = from_cls[cls];
-                 sim += to_cls.includes(c) ? 1 : 0;
+                 if (to_cls.includes(c)) {
+                     sim++;
+                     lab += c + ";";
+                 }
              }
              if (sim >= threshold) {
                  links[links.length] = {
-                     'source': from[from_a].fields.name,
-                     'target': to[to_a].fields.name,
-                     'value': sim
+                     'source': from[from_a].fields.title,
+                     'target': to[to_a].fields.title,
+                     'value': sim,
+                     'label': lab,
                  };
-                 console.log([links.length - 1]);
+                 console.log(links[links.length - 1]);
              }
          }
      }
      for (let to_a in to) {
-         nodes[nodes.length] = {id: to[to_a].fields.title};
+         nodes[nodes.length] = {id: to[to_a].fields.title, to: true};
      }
      data['nodes'] = nodes;
      data['links'] = links;

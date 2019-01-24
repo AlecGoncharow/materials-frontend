@@ -36,11 +36,14 @@ class App extends Component {
     };
     this.handleClick = this.handleClick.bind(this);
     this.handleChange = this.handleChange.bind(this);
+    this.updateSelections = this.updateSelections.bind(this);
   }
 
   updateSelections(selections) {
-      this.setState({dataIsBuilt: false});
+      this.setState({dataIsBuilt: false}, () => this.updateSelectionsState(selections));
+  }
 
+  updateSelectionsState(selections) {
       let resp_data = {};
       if (selections === undefined) {
           resp_data['assignments'] = this.state.selections['assignments'];
@@ -56,9 +59,17 @@ class App extends Component {
           resp_data['classifications'] = this.state.selections['classifications'];
           resp_data['assignments'] = go;
       }
+      let sets = this.state.sets;
+      let nifty_set = this.state.selections.assignments.filter(function (e) {
+          return sets.nifty.includes(e.pk);
+      });
+      let peachy_set = this.state.selections.assignments.filter(function (e) {
+          return sets.peachy.includes(e.pk);
+      });
+
       console.log(resp_data);
-      console.log(this.state.pdc);
-      let sim_data = similarityData({selections: resp_data});
+      console.log(this.state);
+      let sim_data = compareAssignments({from: nifty_set, to: peachy_set});
       let pdc_data = buildData({cls: this.state.pdc, selections: resp_data});
       let pdc_data_tree = buildTreeData({cls: this.state.pdc, selections: resp_data, ignore: 'ACM'});
       let acm_data = buildData({cls: this.state.acm, selections: resp_data});
@@ -72,7 +83,9 @@ class App extends Component {
           pdc_data_tree: pdc_data_tree,
           dataIsBuilt: true,
       });
+
   }
+
     componentDidMount() {
         let get = new Promise( (resolve, reject) => {
                 fetch("https://car-cs.herokuapp.com/data/")

@@ -45,7 +45,7 @@ class SimilarityGraph extends Component {
 
         d3.select(node).call(zoom);
 
-        let scale = ['#79c6e6', '#DC8EE6'];
+        let scale = ['#79c6e6', '#e6141c'];
         let simulation = d3.forceSimulation()
             .force("link", d3.forceLink().id(function(d) { return d.id; }).distance(function(d) {
                 return 100/d.value;
@@ -80,8 +80,10 @@ class SimilarityGraph extends Component {
                     return '';
                 }
             })
-            // prevent lines from catching mouse focus
-            .style("pointer-events", "none");
+        link.append("title")
+            .text(function (d) {
+                return d.label;
+            });
 
         let nodes = view.append("g")
             .attr("class", "nodes")
@@ -97,7 +99,7 @@ class SimilarityGraph extends Component {
             // })
             //.style("opacity", 0.5)
             .style("fill", function(d) {
-                if (d.id.startsWith("PDC")) {
+                if (d.to) {
                     return scale[1];
                 } else {
                     return scale[0];
