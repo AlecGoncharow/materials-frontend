@@ -1,4 +1,32 @@
 
+// for coverage graph
+const keycodes = {
+    "ACM-CS2013: Root::ACM/IEEE Curriculum Guidelines for Undergraduate Degree Programs in Computer Science": "CS13",
+    "ACM-CS2013: Knowledge Area::Algorithms and Complexity": "AL",
+    "ACM-CS2013: Knowledge Area::Architecture and Organization": "AR",
+    "ACM-CS2013: Knowledge Area::Computational Science": "CN",
+    "ACM-CS2013: Knowledge Area::Discrete Structures": "DS",
+    "ACM-CS2013: Knowledge Area::Graphics and Visualization": "GV",
+    "ACM-CS2013: Knowledge Area::Human-Computer Interaction": "HCI",
+    "ACM-CS2013: Knowledge Area::Information Assurance and Security": "IAS",
+    "ACM-CS2013: Knowledge Area::Information Management": "IM",
+    "ACM-CS2013: Knowledge Area::Intelligent Systems": "IS",
+    "ACM-CS2013: Knowledge Area::Networking and Communications": "NC",
+    "ACM-CS2013: Knowledge Area::Operating Systems": "OS",
+    "ACM-CS2013: Knowledge Area::Platform-based Development": "PBD",
+    "ACM-CS2013: Knowledge Area::Parallel and Distributed Computing": "PD",
+    "ACM-CS2013: Knowledge Area::Programming Languages": "PL",
+    "ACM-CS2013: Knowledge Area::Software Development Fundamentals": "SDF",
+    "ACM-CS2013: Knowledge Area::Software Engineering": "SE",
+    "ACM-CS2013: Knowledge Area::Systems Fundamentals": "SF",
+    "ACM-CS2013: Knowledge Area::Social Issues and Professional Practice": "SP",
+    "PDC-2012: Root::NSF/IEEE-TCPP Curriculum Initiative on Parallel and Distributed Computing-Core Topics-for Undergraduates": "PDC12",
+    "PDC-2012: Table::Architecture": "AR",
+    "PDC-2012: Table::Programming": "PR",
+    "PDC-2012: Table::Algorithms": "AL",
+    "PDC-2012: Table::Cross Cutting and Advanced": "CC",
+};
+
 export default function buildData(props){
     let cls = props.cls;
     let assignments = props.selections.assignments;
@@ -64,11 +92,14 @@ export function buildTreeData(props) {
     for (let a in cls) {
         let o = cls[a];
         let value = hits[o.id] !== undefined ? hits[o.id] : 0;
+        let label = keycodes[o.id];
+        // root
         if (o.parent === undefined) {
             out[out.length] = {
                 id: o.id,
                 depth: o.depth,
                 hits: value,
+                label: label,
             };
         }
         else {
@@ -78,6 +109,7 @@ export function buildTreeData(props) {
                     id: o.id,
                     depth: o.depth,
                     hits: value,
+                    label: label,
                 };
                 links[links.length] = {'source': o.id, 'target': p.id, 'hits': value};
 

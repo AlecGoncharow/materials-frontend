@@ -72,10 +72,10 @@ class CoverageGraph extends Component {
             })
             .attr("stroke", function(d){
                 if (d.hits === 0) {
-                    return 'grey';
+                    return 'lightgrey';
                 }
                 else {
-                    return 'black';
+                    return 'grey';
                 }
             })
             .attr("stroke-dasharray", function(d) {
@@ -93,7 +93,10 @@ class CoverageGraph extends Component {
             .attr("class", "nodes")
             .selectAll("circle")
             .data(this.state.data.nodes)
-            .enter().append("circle")
+            .enter().append("g");
+
+        let circles = nodes.append("circle")
+            .attr("class", "node")
             .attr("r", function(d) { return (20/(1 + d.depth)); })
             .attr("id", function(d) { return d.id; })
             //.on("mouseover", function(d) { d3.select(this).style("opacity", 1 ); })
@@ -137,10 +140,10 @@ class CoverageGraph extends Component {
             })
             .attr("stroke", function(d){
                 if (d.hits === 0) {
-                    return 'grey';
+                    return 'lightgrey';
                 }
                 else {
-                    return 'black';
+                    return 'grey';
                 }
             })
             .attr("stroke-dasharray", function(d) {
@@ -155,15 +158,24 @@ class CoverageGraph extends Component {
         nodes.append("title")
             .text(function(d) { return d.id + ": " + d.hits; });
 
-        let text = view.append("g")
-            .attr("class", "labels")
-            .selectAll("text")
-            .data(data.nodes)
-            .enter().append("text")
-            .attr("dx", function(d){return -20})
-            .text(function(d) { if (d.depth === 1) {
-                return code++ + "";
-            } return "";
+        let text = nodes.append("text")
+            .attr("text-anchor", "middle")
+            .attr("font-weight", "bolder")
+            .attr("dx", function (d) {
+                return d.y + 100;
+            })
+            .attr("fill", function() {
+                return "#000000"
+            })
+            .attr("stroke", function() {
+                return ""
+            })
+            .text(function(d) {
+                if (d.label !== undefined) {
+                    return d.label;
+                } else {
+                    return "";
+                }
             });
 
         let ticked = function() {
@@ -173,13 +185,14 @@ class CoverageGraph extends Component {
                 .attr("x2", function(d) { return d.target.x; })
                 .attr("y2", function(d) { return d.target.y; });
 
-            nodes
-                .attr("cx", function(d) { return d.x; })
-                .attr("cy", function(d) { return d.y; });
 
-            text
-                .attr("dx", function(d) { return d.x})
-                .attr("dy", function (d) { return d.y});
+            nodes
+                .attr("transform", function(d) {
+                    return "translate(" + d.x + "," + d.y + ")";
+                })
+            //    .attr("dx", function(d) { return d.x; })
+            //    .attr("dy", function(d) { return d.y; });
+
         };
 
         simulation
