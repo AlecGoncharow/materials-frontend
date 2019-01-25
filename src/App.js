@@ -216,7 +216,7 @@ class App extends Component {
                           {pdc_data}
                           {pdc_graph}
                       </div>
-                      <div>
+                      <div style={sunStyle}>
                           {sim_graph}
                       </div>
                   </Grid>
