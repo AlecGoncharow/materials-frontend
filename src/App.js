@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
 //import CoverageGraph from './CoverageGraph'
-import ButtonAppBar from './HeaderBar';
+import DrawerAppBar from "./PersistentDrawer";
 import CircularIndeterminate from './Loading';
 import BasicSunburst from './basic-sunburst';
 import LinearIndeterminate from './LinearIndeterminate'
@@ -172,7 +172,7 @@ class App extends Component {
           }
           return (
               <div className="App">
-                  <ButtonAppBar/>
+                  <DrawerAppBar/>
                   {loading}
               </div>
           )
@@ -205,7 +205,7 @@ class App extends Component {
           return (
               <div className="App">
                   <div>
-                      <ButtonAppBar onClick={this.handleClick} onKeyPress={this.handleChange}/>
+                      <DrawerAppBar onClick={this.handleClick} onKeyPress={this.handleChange}/>
                   </div>
                   <Grid>
                       <div style={sunStyle}>

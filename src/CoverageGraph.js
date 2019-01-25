@@ -18,6 +18,10 @@ class CoverageGraph extends Component {
         this.createGraph();
     }
 
+    componentWillUnmount() {
+        d3.select(this.node).remove();
+    }
+
     componentDidUpdate(prevProps, prevState, snapshot) {
         this.createGraph();
     }
@@ -93,7 +97,12 @@ class CoverageGraph extends Component {
             .attr("class", "nodes")
             .selectAll("circle")
             .data(this.state.data.nodes)
-            .enter().append("g");
+            .enter().append("g")
+            .call(d3.drag()
+                .on("start", dragstarted)
+                .on("drag", dragged)
+                .on("end", dragended)
+            );
 
         let circles = nodes.append("circle")
             .attr("class", "node")
@@ -204,6 +213,23 @@ class CoverageGraph extends Component {
 
         function zoomed() {
             view.attr("transform", d3.event.transform);
+        }
+
+        function dragstarted(d) {
+            if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+            d.fx = d.x;
+            d.fy = d.y;
+        }
+
+        function dragged(d) {
+            d.fx = d3.event.x;
+            d.fy = d3.event.y;
+        }
+
+        function dragended(d) {
+            if (!d3.event.active) simulation.alphaTarget(0);
+            d.fx = null;
+            d.fy = null;
         }
 
     }
