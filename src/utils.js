@@ -4,47 +4,31 @@ export default function buildData(props){
     let assignments = props.selections.assignments;
     console.log(cls);
     console.log(assignments);
-    let cSet = {};
+    let hits = {};
     for (let assignment in assignments) {
         let classifications = assignments[assignment].fields.classifications;
         for (let c in classifications) {
             let cl = classifications[c];
-            if (cSet[cl] !== undefined) {
-                cSet[cl]++;
-            }
-            else {
-                cSet[cl] = 1;
-            }
-        }
-    }
-
-    let nodes = [];
-    for (let item in cSet) {
-        if (cls[item] !== undefined) {
-            let curr = {id: cls[item].id, parent: cls[item].parent, depth: cls[item].depth, hits: cSet[item]};
-            while (curr !== undefined) {
-                nodes[nodes.length] = curr;
-                if (cls[curr.parent] !== undefined) {
-                    curr = {
-                        id: cls[curr.parent].id,
-                        parent: cls[curr.parent].parent,
-                        depth: cls[curr.parent].depth,
-                        hits: cSet[curr.parent]
-                    };
+            let current = cls[cl];
+            while (current !== undefined) {
+                if (hits[current.id] !== undefined) {
+                    hits[current.id]++;
                 } else {
-                    break;
+                    hits[current.id] = 1;
                 }
+                current = cls[current.parent];
             }
         }
     }
+    console.log(hits);
 
-    console.log(nodes);
     let out = [];
-    for (let c in nodes) {
-        if (nodes[c]['depth'] === 1) {
+    for (let c in cls) {
+        if (cls[c]['depth'] === 1) {
             let obj = {};
-            obj['name'] = nodes[c]['id'] + ": " + nodes[c].hits;
-            obj['value'] = nodes[c]['hits'] + 10;
+            let value = hits[c] !== undefined ? hits[c] : 0;
+            obj['name'] = cls[c]['id'] + ": " + value;
+            obj['value'] = value + 10;
             out.push(obj);
         }
     }
@@ -58,65 +42,50 @@ export function buildTreeData(props) {
     let cls = props.cls;
     let assignments = props.selections.assignments;
     let ignore = props.ignore;
-    let cSet = {};
+    let hits = {};
     for (let assignment in assignments) {
         let classifications = assignments[assignment].fields.classifications;
         for (let c in classifications) {
             let cl = classifications[c];
-            if (cl.startsWith(ignore)) {
-                continue;
-            } else {
-                if (cSet[cl] !== undefined) {
-                    cSet[cl]++;
+            let current = cls[cl];
+            while (current !== undefined) {
+                if (hits[current.id] !== undefined) {
+                    hits[current.id]++;
                 } else {
-                    cSet[cl] = 1;
+                    hits[current.id] = 1;
                 }
+                current = cls[current.parent];
             }
         }
     }
-
-    let nodes = [];
-    for (let item in cSet) {
-        if (cls[item] !== undefined) {
-            let curr = {id: cls[item].id, parent: cls[item].parent, depth: cls[item].depth, hits: cSet[item]};
-            while (curr !== undefined) {
-                nodes[nodes.length] = curr;
-                if (cls[curr.parent] !== undefined) {
-                    curr = {
-                        id: cls[curr.parent].id,
-                        parent: cls[curr.parent].parent,
-                        depth: cls[curr.parent].depth,
-                        hits: cSet[curr.parent]
-                    };
-                } else {
-                    break;
-                }
-            }
-        }
-    }
-
     let data = {max: []};
     let out = [];
     let links = [];
     for (let a in cls) {
-        if (a.startsWith(ignore)) {
-            continue;
-        }
         let o = cls[a];
+        let value = hits[o.id] !== undefined ? hits[o.id] : 0;
         if (o.parent === undefined) {
-            out[out.length] = o;
+            out[out.length] = {
+                id: o.id,
+                depth: o.depth,
+                hits: value,
+            };
         }
         else {
             let p = cls[o.parent];
-            if (p.hits !== 0) {
-                out[out.length] = o;
-                links[links.length] = {'source': o.id, 'target': p.id, 'hits': o.hits};
+            if (hits[p.id] !== 0 && hits[p.id] !== undefined) {
+                out[out.length] = {
+                    id: o.id,
+                    depth: o.depth,
+                    hits: value,
+                };
+                links[links.length] = {'source': o.id, 'target': p.id, 'hits': value};
 
-                data.max[o.depth] = data.max[o.depth] > o.hits ? data.max[o.depth] : o.hits;
+                data.max[o.depth] = data.max[o.depth] > value ? data.max[o.depth] : value;
             }
         }
     }
-    data['nodes'] = nodes;
+    data['nodes'] = out;
     data['links'] = links;
     return data;
 }
