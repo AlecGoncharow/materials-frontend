@@ -14,7 +14,7 @@ class CoverageGraph extends Component {
     }
 
     componentDidMount() {
-        console.log(this.state.data);
+        //console.log(this.state.data);
         this.createGraph();
     }
 
@@ -29,8 +29,6 @@ class CoverageGraph extends Component {
     createGraph() {
         const node = this.node;
         let data = this.state.data;
-
-        let code = 0;
 
         let zoom = d3.zoom()
             .scaleExtent([1, 10])
@@ -60,7 +58,7 @@ class CoverageGraph extends Component {
             .force("y", d3.forceY(0))
             .force("x", d3.forceX(0));
 
-        console.log(this.state.data);
+        //console.log(this.state.data);
         let link = view.append("g")
             .attr("class", "links")
             .selectAll("line")
@@ -104,7 +102,7 @@ class CoverageGraph extends Component {
                 .on("end", dragended)
             );
 
-        let circles = nodes.append("circle")
+        nodes.append("circle")
             .attr("class", "node")
             .attr("r", function(d) { return (20/(1 + d.depth)); })
             .attr("id", function(d) { return d.id; })
@@ -167,7 +165,7 @@ class CoverageGraph extends Component {
         nodes.append("title")
             .text(function(d) { return d.id + ": " + d.hits; });
 
-        let text = nodes.append("text")
+        nodes.append("text")
             .attr("text-anchor", "middle")
             .attr("font-weight", "bolder")
             .attr("dx", function (d) {

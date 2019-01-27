@@ -26,8 +26,6 @@ class SimilarityGraph extends Component {
         const node = this.node;
         let data = this.state.data;
 
-        let code = 0;
-
         let zoom = d3.zoom()
             .scaleExtent([1, 10])
             .translateExtent([[-100, -100], [1000 + 90,  1000 + 100]])
@@ -38,10 +36,6 @@ class SimilarityGraph extends Component {
             .attr("x", 0.5)
             .attr("y", 0.5)
             //.attr("fill", "none")
-
-        let color_scale = d3.scaleLinear()
-            .domain([1, 100])
-            .range([88, 50]);
 
         d3.select(node).call(zoom);
 

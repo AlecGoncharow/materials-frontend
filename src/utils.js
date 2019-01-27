@@ -30,8 +30,8 @@ const keycodes = {
 export default function buildData(props){
     let cls = props.cls;
     let assignments = props.selections.assignments;
-    console.log(cls);
-    console.log(assignments);
+    //console.log(cls);
+    //console.log(assignments);
     let hits = {};
     for (let assignment in assignments) {
         let classifications = assignments[assignment].fields.classifications;
@@ -48,7 +48,7 @@ export default function buildData(props){
             }
         }
     }
-    console.log(hits);
+    //console.log(hits);
 
     let out = [];
     for (let c in cls) {
@@ -61,7 +61,7 @@ export default function buildData(props){
         }
     }
 
-    console.log(out);
+    //console.log(out);
 
     return {children: out};
 }
@@ -69,7 +69,6 @@ export default function buildData(props){
 export function buildTreeData(props) {
     let cls = props.cls;
     let assignments = props.selections.assignments;
-    let ignore = props.ignore;
     let hits = {};
     for (let assignment in assignments) {
         let classifications = assignments[assignment].fields.classifications;
@@ -154,7 +153,7 @@ export function similarityData(props) {
     let data = {};
     let links = [];
     let nodes = [];
-    console.log(similarity);
+    //console.log(similarity);
     for (let cl in cls) {
         nodes[nodes.length] = {id: cls[cl]};
         let curr = similarity[cls[cl]];
@@ -181,7 +180,7 @@ export function similarityData(props) {
      let links = [];
      let nodes = [];
      for (let from_a in from) {
-         console.log(from[from_a]);
+         //console.log(from[from_a]);
          nodes[nodes.length] = {id: from[from_a].fields.title, to: false};
          let from_cls = from[from_a].fields.classifications;
          for (let to_a in to) {
@@ -202,7 +201,7 @@ export function similarityData(props) {
                      'value': sim,
                      'label': lab,
                  };
-                 console.log(links[links.length - 1]);
+                 //console.log(links[links.length - 1]);
              }
          }
      }

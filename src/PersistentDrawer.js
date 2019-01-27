@@ -13,13 +13,8 @@ import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
-import MailIcon from '@material-ui/icons/Mail';
 import Button from '@material-ui/core/Button';
-import TextField from "@material-ui/core/TextField";
+import { BrowserRouter as Router, Route } from "react-router-dom";
 
 const drawerWidth = 240;
 
@@ -119,16 +114,9 @@ class DrawerAppBar extends React.Component {
             >
               <MenuIcon />
             </IconButton>
-            <TextField className={classes.textField} label="Custom IDs" aria-label="input"
-                       inputProps={inputProps}>
-            </TextField>
             <Typography variant="h6" color="inherit" className={classes.grow}>
               Computer Science Material Visualization
             </Typography>
-            <Button id="btn-All" color="inherit" onClick={this.props.onClick}>All Assignments</Button>
-            <Button id="btn-Nifty" color="inherit" onClick={this.props.onClick}>Nifty</Button>
-            <Button id="btn-Peachy" color="inherit" onClick={this.props.onClick}>Peachy</Button>
-            <Button id="btn-3145" color="inherit" onClick={this.props.onClick}>ITCS 3145</Button>
           </Toolbar>
         </AppBar>
         <Drawer
@@ -147,22 +135,23 @@ class DrawerAppBar extends React.Component {
           </div>
           <Divider />
           <List>
-            {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-              <ListItem button key={text}>
-                <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItem>
-            ))}
+            <Button id="home" onClick={this.props.onClick}>Home</Button>
+            <Button id="coverage" onClick={this.props.onClick}>Coverage</Button>
+            <Button id="similarity" onClick={this.props.onClick}>Similarity</Button>
           </List>
+          <Divider/>
+          <Router>
+            <Route path="/coverage" component={() => {
+              return (<List>
+                {['All Assignments', 'Nifty', 'Peachy', 'ITCS 3145'].map((text, index) => (
+                <Button id={text} key={text} color="inherit" onClick={this.props.onClick}>{text}
+                </Button>
+                ))
+                }
+              </List>)
+            }}/>
+          </Router>
           <Divider />
-          <List>
-            {['All mail', 'Trash', 'Spam'].map((text, index) => (
-              <ListItem button key={text}>
-                <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItem>
-            ))}
-          </List>
         </Drawer>
       </div>
     );

@@ -5,10 +5,14 @@ import DrawerAppBar from "./PersistentDrawer";
 import CircularIndeterminate from './Loading';
 import BasicSunburst from './basic-sunburst';
 import LinearIndeterminate from './LinearIndeterminate'
-import buildData, { buildTreeData, similarityData, compareAssignments } from './utils';
+import buildData, { buildTreeData, compareAssignments } from './utils';
 import Grid from "@material-ui/core/Grid";
 import CoverageGraph from "./CoverageGraph";
 import SimilarityGraph from "./SimilarityGraph";
+import { BrowserRouter as Router, Route, Switch} from "react-router-dom";
+import Button from "@material-ui/core/Button";
+import Toolbar from "@material-ui/core/es/Toolbar/Toolbar";
+import Typography from "@material-ui/core/es/Typography/Typography";
 
 class App extends Component {
   constructor(props){
@@ -43,7 +47,7 @@ class App extends Component {
       this.setState({dataIsBuilt: false}, () => this.updateSelectionsState(selections));
   }
 
-  updateSelectionsState(selections) {
+  updateSelectionsState(selections, to) {
       let resp_data = {};
       if (selections === undefined) {
           resp_data['assignments'] = this.state.selections['assignments'];
@@ -67,19 +71,19 @@ class App extends Component {
           return sets.peachy.includes(e.pk);
       });
 
-      console.log(resp_data);
-      console.log(this.state);
+      //console.log(resp_data);
+      //console.log(this.state);
       let sim_data = compareAssignments({from: nifty_set, to: peachy_set});
-      let pdc_data = buildData({cls: this.state.pdc, selections: resp_data});
+      //let pdc_data = buildData({cls: this.state.pdc, selections: resp_data});
       let pdc_data_tree = buildTreeData({cls: this.state.pdc, selections: resp_data, ignore: 'ACM'});
-      let acm_data = buildData({cls: this.state.acm, selections: resp_data});
+      //let acm_data = buildData({cls: this.state.acm, selections: resp_data});
       let acm_data_tree = buildTreeData({cls: this.state.acm, selections: resp_data, ignore: 'PDC'});
-      console.log(pdc_data_tree);
+      //console.log(pdc_data_tree);
       this.setState({
           sim_data: sim_data,
-          acm_data: acm_data,
+          //acm_data: acm_data,
           acm_data_tree: acm_data_tree,
-          pdc_data: pdc_data,
+          //pdc_data: pdc_data,
           pdc_data_tree: pdc_data_tree,
           dataIsBuilt: true,
       });
@@ -90,11 +94,11 @@ class App extends Component {
         let get = new Promise( (resolve, reject) => {
                 fetch("https://car-cs.herokuapp.com/data/")
                     .then((response) => {
-                        console.log(response);
+                        //console.log(response);
                         return response.json()
                     })
                     .then((resp_data) => {
-                        console.log(resp_data);
+                        //console.log(resp_data);
                         this.setState({data: resp_data, selections: resp_data});
                         if (this.state.acm && this.state.pdc) {
                             resolve("done")
@@ -102,11 +106,11 @@ class App extends Component {
                     });
                 fetch("https://car-cs.herokuapp.com/static/assignments/js/pdc.json")
                     .then((response) => {
-                        console.log(response);
+                        //console.log(response);
                         return response.json();
                     })
                     .then((resp_data) => {
-                        console.log(resp_data);
+                        //console.log(resp_data);
                         this.setState({pdc: resp_data});
                         if (this.state.data && this.state.acm) {
                             resolve("done")
@@ -114,11 +118,11 @@ class App extends Component {
                     });
                 fetch("https://car-cs.herokuapp.com/static/assignments/js/ACM.json")
                     .then((response) => {
-                        console.log(response);
+                        //console.log(response);
                         return response.json();
                     })
                     .then((resp_data) => {
-                        console.log(resp_data);
+                        //console.log(resp_data);
                         this.setState({acm: resp_data});
                         if (this.state.data && this.state.pdc) {
                             resolve("done")
@@ -144,17 +148,29 @@ class App extends Component {
       if (target !== undefined) {
           let targetID = target.id;
           switch (targetID) {
-              case 'btn-All':
+              case 'All Assignments':
                   this.updateSelections();
                   break;
-              case 'btn-Peachy':
+              case 'Peachy':
                   this.updateSelections(this.state.sets.peachy);
                   break;
-              case 'btn-3145':
+              case 'ITCS 3145':
                   this.updateSelections(this.state.sets.itcs_3145);
                   break;
-              case 'btn-Nifty':
+              case 'Nifty':
                   this.updateSelections(this.state.sets.nifty);
+                  break;
+              case 'home':
+                  this.setState({data: false});
+                  window.location = "/";
+                  break;
+              case 'coverage':
+                  this.setState({data: false});
+                  window.location = "/coverage";
+                  break;
+              case 'similarity':
+                  this.setState({data: false});
+                  window.location = "similarity";
                   break;
               default:
                   console.log(targetID);
@@ -163,6 +179,7 @@ class App extends Component {
   }
 
   render() {
+      console.log(this.state);
       if (!this.state.data) {
           let loading;
           if (this.state.selections) {
@@ -173,26 +190,32 @@ class App extends Component {
           return (
               <div className="App">
                   <DrawerAppBar/>
-                  {loading}
+                  <div style={{
+                      marginTop: '70px'
+                  }
+                  } />
+                  <div>
+                      {loading}
+                  </div>
               </div>
           )
       }
       else {
-          let acm_data;
+          //let acm_data;
           let acm_graph;
-          let pdc_data;
+          //let pdc_data;
           let pdc_graph;
           let sim_graph;
           if (this.state.dataIsBuilt) {
-              acm_data = <BasicSunburst data={this.state.acm_data}/>
+              //acm_data = <BasicSunburst data={this.state.acm_data}/>
               acm_graph = <CoverageGraph data={this.state.acm_data_tree}/>
-              pdc_data = <BasicSunburst data={this.state.pdc_data}/>
+              //pdc_data = <BasicSunburst data={this.state.pdc_data}/>
               pdc_graph = <CoverageGraph data={this.state.pdc_data_tree}/>
               sim_graph = <SimilarityGraph data={this.state.sim_data}/>
           } else {
-              acm_data = <CircularIndeterminate/>;
+              //acm_data = <CircularIndeterminate/>;
               acm_graph = <CircularIndeterminate/>;
-              pdc_data = <CircularIndeterminate/>;
+              //pdc_data = <CircularIndeterminate/>;
               pdc_graph = <CircularIndeterminate/>;
               sim_graph = <CircularIndeterminate/>
           }
@@ -207,17 +230,68 @@ class App extends Component {
                   <div>
                       <DrawerAppBar onClick={this.handleClick} onKeyPress={this.handleChange}/>
                   </div>
+                  <div style={{
+                      marginTop: '70px'
+                  }
+                  } />
                   <Grid>
                       <div style={sunStyle}>
-                          {acm_data}
-                          {acm_graph}
-                      </div>
-                      <div style={sunStyle}>
-                          {pdc_data}
-                          {pdc_graph}
-                      </div>
-                      <div style={sunStyle}>
-                          {sim_graph}
+                          <Router>
+                              <Switch>
+                                  {/*<Route path="/similarity/:set" component={() => {}}/>*/}
+                                  <Route path="/coverage" component={() => {
+                                      return (
+                                          <div>
+                                              <div>
+                                                  <Toolbar>
+                                                      <Button id="All Assignments" color="inherit"
+                                                              onClick={this.handleClick}
+                                                      >All Assignments</Button>
+                                                      <Button id="Nifty" color="inherit"
+                                                              onClick={this.handleClick}
+                                                      >Nifty</Button>
+                                                      <Button id="Peachy" color="inherit"
+                                                              onClick={this.handleClick}
+                                                      >Peachy</Button>
+                                                      <Button id="ITCS 3145" color="inherit"
+                                                              onClick={this.handleClick}
+                                                      >ITCS 3145</Button>
+                                                  </Toolbar>
+                                              </div>
+                                              <div>
+                                                  <Typography variant="h6" color="inherit">
+                                                      ACM-IEEE CS2013 Coverage Graph
+                                                  </Typography>
+                                                  {acm_graph}
+                                                  <Typography variant="h6" color="inherit">
+                                                      PDC12 Coverage Graph
+                                                  </Typography>
+                                                  {pdc_graph}
+                                              </div>
+                                          </div>
+                                      )
+                                  }}/>
+                                  <Route path="/similarity" component={() => {
+                                      return (
+                                          <div>
+                                              {sim_graph}
+                                          </div>
+                                      )
+                                  }}/>
+                                  <Route path="/" component={() => {
+                                    return (
+                                        <div>
+                                            <Button id="coverage" color="inherit"
+                                                    onClick={this.handleClick}
+                                            >Coverage Graphs</Button>
+                                            <Button id="similarity" color="inherit"
+                                                    onClick={this.handleClick}
+                                            >Similarity Graph</Button>
+                                        </div>
+                                  )
+                                  }}/>
+                              </Switch>
+                          </Router>
                       </div>
                   </Grid>
               </div>
