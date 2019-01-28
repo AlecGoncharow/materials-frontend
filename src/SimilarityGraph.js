@@ -14,7 +14,7 @@ class SimilarityGraph extends Component {
     }
 
     componentDidMount() {
-        console.log(this.state.data);
+        //console.log(this.state.data);
         this.createGraph();
     }
 

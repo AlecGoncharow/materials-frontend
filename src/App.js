@@ -136,8 +136,7 @@ class App extends Component {
         });
     }
 
-
-  handleChange(event) {
+    handleChange(event) {
       if (event.key === "Enter") {
           this.updateSelections("?assignments=" + event.target.value);
       }
@@ -161,16 +160,13 @@ class App extends Component {
                   this.updateSelections(this.state.sets.nifty);
                   break;
               case 'home':
-                  this.setState({data: false});
-                  window.location = "/";
+                  this.props.history.push("/");
                   break;
               case 'coverage':
-                  this.setState({data: false});
-                  window.location = "/coverage";
+                  this.props.history.push("/coverage");
                   break;
               case 'similarity':
-                  this.setState({data: false});
-                  window.location = "similarity";
+                  this.props.history.push("/similarity");
                   break;
               default:
                   console.log(targetID);
@@ -179,7 +175,6 @@ class App extends Component {
   }
 
   render() {
-      console.log(this.state);
       if (!this.state.data) {
           let loading;
           if (this.state.selections) {
@@ -237,7 +232,7 @@ class App extends Component {
                   <Grid>
                       <div style={sunStyle}>
                           <Router>
-                              <Switch>
+                              <Switch location={this.props.location}>
                                   {/*<Route path="/similarity/:set" component={() => {}}/>*/}
                                   <Route path="/coverage" component={() => {
                                       return (
